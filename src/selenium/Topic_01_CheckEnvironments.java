@@ -21,6 +21,8 @@ public class Topic_01_CheckEnvironments {
 		System.setProperty("webdriver.chrome.driver",
 				"/Users/tanhungvo/Documents/SeleniumWebDrider/chromedriver_mac64/chromedriver");
 		driver = new ChromeDriver();
+		
+		// Open page
 		driver.get("https://www.guru99.com/");
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
