@@ -1,49 +1,59 @@
 package selenium;
 
-import org.testng.annotations.Test;
+import org.testng.Assert;
+import org.testng.annotations.*;
 import org.testng.annotations.BeforeClass;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 
+@Test
 public class Topic_01_CheckEnvironments {
 
-	WebDriver driver;
+	public WebDriver driver;
 
-	// Pre-condition
 	@BeforeClass
 	public void beforeClass() {
 
-		System.setProperty("webdriver.chrome.driver",
-				"/Users/tanhungvo/Documents/SeleniumWebDrider/chromedriver_mac64/chromedriver");
+		String driverPath = "/Users/tanhungvo/Documents/SeleniumWebDrider/chromedriver-mac-arm64/chromedriver";
+		System.setProperty("webdriver.chrome.driver", driverPath);
 		driver = new ChromeDriver();
 		
-		// Open page
-		driver.get("https://www.guru99.com/");
+		driver.get("https://artventure.sipher.gg/workspace");
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
 
-	// Action of Testcase
-	@Test
-	public void TC_01_CheckUrl() {
-		String homePageUrl = driver.getCurrentUrl();
-		System.out.println("Home page Url = " + homePageUrl);
-		Assert.assertEquals(homePageUrl, "https://www.guru99.com/");
+	public void TC_01_SignInWithGoogle() throws InterruptedException {
+		driver.findElement(By.xpath("//*[text()='Sign in with Google']")).click();
+		Thread.sleep(6000);		
+		
+		String mainWindowHandle = driver.getWindowHandle(); // Store the current window handle
+		Set<String> windowHandles = driver.getWindowHandles(); // Get all window handles
+		for (String handle : windowHandles) {
+		    if (!handle.equals(mainWindowHandle)) {
+		        driver.switchTo().window(handle); // Switch to the pop-up window
+		        WebElement emailField = driver.findElement(By.xpath("//input[@type='email']"));
+		        emailField.sendKeys("tester.dad@atherlabs.com");
+		        driver.findElement(By.xpath("//*[text()='Next']")).click();
+				Thread.sleep(6000);					        			
+
+		    	WebElement passwordField = driver.findElement(By.xpath("//input[@type='password']"));
+		        passwordField.sendKeys("Playsipher@123");
+				driver.findElement(By.xpath("//*[text()='Next']")).click();
+				Thread.sleep(3000);	
+				
+				break;
+			}		    
+		}
 	}
 
-	@Test
-	public void TC_01_CheckTitle() {
-		String homePageTitle = driver.getTitle();
-		System.out.println("Home page Title = " + homePageTitle);
-		Assert.assertEquals(homePageTitle, "Meet Guru99 – Free Training Tutorials & Video for IT Courses");
-	}
-
-	// Post-condition
 	@AfterClass
 	public void afterClass() {
 		driver.quit();
